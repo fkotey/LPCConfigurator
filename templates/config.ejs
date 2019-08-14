@@ -274,7 +274,7 @@ M557 X<%- template.mesh.x_min %>:<%- template.mesh.x_max %> Y<%- template.mesh.y
 -%>
 <%# TODO:: Only handles Thermistors currently %>
 ; Heater <%- i %>
-M308 S<%- i -%> P"<%- util.lookupNameForPin(heater.channel, board.lpc.thermistors) %>" Y"thermistor" B<%- heater.beta + ((heater.c == 0) ? 0 : " C" + heater.c.toExponential(6)) %> R<%- heater.series %> ; Set thermistor + ADC parameters for heater <%- i %>
+M308 S<%- i -%> P"<%- util.lookupNameForPin(heater.channel, board.lpc.thermistors) %>" Y"thermistor"  T<%- heater.thermistor %> B<%- heater.beta + ((heater.c == 0) ? 0 : " C" + heater.c.toExponential(6)) %> R<%- heater.series %> ; Set thermistor + ADC parameters for heater <%- i %>
 M950 H<%- i -%> C"<%- util.lookupNameForPin(heater.heater, board.lpc.mosfets) -%>" T<%- i %> Q<%- (i==0)?10:250 %> ; Heater <%- i %> attached to pin <%- util.lookupNameForPin(heater.heater, board.lpc.mosfets) %> (P<%- heater.heater %>) with PWM Frequency at <%- (i==0)?10:250 %>Hz
 M143 H<%- i %> S<%- heater.temp_limit %> ; Set temperature limit for heater <%- i %> to <%- heater.temp_limit %>C
 <%
