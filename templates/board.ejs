@@ -9,55 +9,43 @@
 //    : Comments can be defined with // or # (comments are not supported inside arrays)
 //    : Each config entry must be all on a single line.
 
-lpc.board = <%- template.lpc.boardName %>; 
+lpc.board = <%- template.board %>; 
 
 //LED blinks to indicate Platform is spinning or other diagnostic 
 //Comment out or set to NoPin if not wanted.
-leds.diagnostic = <%- template.lpc.diagnosticPin %>; 
-
-atxPowerPin = <%- template.lpc.atxPowerPin %>;
-atxPowerPinInverted = false;
+leds.diagnostic = <%- board.lpc.diagnosticPin %>; 
 
 //Internal SDCard SPI Frequency.
-lpc.internalSDCard.spiFrequencyHz  = <%- template.lpc.internalSDCardSPIFrequencyHz %>;
+lpc.internalSDCard.spiFrequencyHz  = <%- board.lpc.internalSDCardSPIFrequencyHz %>;
 
 //Only supports 1 External SDCard
-<%- (template.lpc.externalSDCard.present)?"":"//" -%>externalSDCard.csPin               = <%- template.lpc.externalSDCard.csPin %>;
-<%- (template.lpc.externalSDCard.present)?"":"//" -%>externalSDCard.cardDetectPin       = <%- template.lpc.externalSDCard.cardDetectPin %>;
-<%- (template.lpc.externalSDCard.present)?"":"//" -%>lpc.externalSDCard.spiFrequencyHz  = <%- template.lpc.externalSDCard.spiFrequencyHz %>;
-<%- (template.lpc.externalSDCard.present)?"":"//" -%>lpc.externalSDCard.spiChannel  = <%- template.lpc.externalSDCard.spiChannel %>;
+<%- (template.externalSDCard.present)?"":"//" -%>externalSDCard.csPin               = <%- board.lpc.externalSDCard.csPin %>;
+<%- (template.externalSDCard.present)?"":"//" -%>externalSDCard.cardDetectPin       = <%- board.lpc.externalSDCard.cardDetectPin %>;
+<%- (template.externalSDCard.present)?"":"//" -%>lpc.externalSDCard.spiFrequencyHz  = <%- board.lpc.externalSDCard.spiFrequencyHz %>;
+<%- (template.externalSDCard.present)?"":"//" -%>lpc.externalSDCard.spiChannel  = <%- board.lpc.externalSDCard.spiChannel %>;
 
 //LCD Pins (only ST9720 SPI currently supported)
-<% if(template.lpc.lcd.spiChannel == 2) //softwareSPI
+<% if(board.lpc.lcd.spiChannel == 2) //softwareSPI
 	{ -%>
 //setup the Software SPI Pins for LCD
-lpc.softwareSPI.pins = {<%- util.makePlainArrayString(template.lpc.softwareSPI.pins) %>}; //Set to GPIO pins to use as SCK, MISO, MOSI
+lpc.softwareSPI.pins = {<%- util.makePlainArrayString(board.lpc.softwareSPI.pins) %>}; //Set to GPIO pins to use as SCK, MISO, MOSI
 <%	} -%>
-<%- (template.lpc.lcdEnabled)?"":"//" -%>lcd.spiChannel =       <%- template.lpc.lcd.spiChannel %>;
-<%- (template.lpc.lcdEnabled)?"":"//" -%>lcd.lcdCSPin =       <%- template.lpc.lcd.lcdCSPin %>;
-<%- (template.lpc.lcdEnabled)?"":"//" -%>lcd.lcdBeepPin =     <%- template.lpc.lcd.lcdBeepPin %>;
-<%- (template.lpc.lcdEnabled)?"":"//" -%>lcd.encoderPinA =    <%- template.lpc.lcd.encoderPinA %>;
-<%- (template.lpc.lcdEnabled)?"":"//" -%>lcd.encoderPinB =    <%- template.lpc.lcd.encoderPinB %>;
-<%- (template.lpc.lcdEnabled)?"":"//" -%>lcd.encoderPinSw =   <%- template.lpc.lcd.encoderPinSw %>; //click
-<%- (template.lpc.lcdEnabled)?"":"//" -%>lcd.lcdDCPin =       <%- template.lpc.lcd.lcdDCPin %>;  //DataControl Pin (A0) if none used set to NoPin
-<%- (template.lpc.lcdEnabled)?"":"//" -%>lcd.panelButtonPin = <%- template.lpc.lcd.panelButtonPin %>; //Extra button on Viki and RRD Panels (reset/back etc configurable)
+<%- (template.display.type)?"":"//" -%>lcd.spiChannel =     <%- board.lpc.lcd.spiChannel %>;
+<%- (template.display.type)?"":"//" -%>lcd.lcdCSPin =       <%- board.lpc.lcd.lcdCSPin %>;
+<%- (template.display.type)?"":"//" -%>lcd.lcdBeepPin =     <%- board.lpc.lcd.lcdBeepPin %>;
+<%- (template.display.type)?"":"//" -%>lcd.encoderPinA =    <%- board.lpc.lcd.encoderPinA %>;
+<%- (template.display.type)?"":"//" -%>lcd.encoderPinB =    <%- board.lpc.lcd.encoderPinB %>;
+<%- (template.display.type)?"":"//" -%>lcd.encoderPinSw =   <%- board.lpc.lcd.encoderPinSw %>; //click
+<%- (template.display.type)?"":"//" -%>lcd.lcdDCPin =       <%- board.lpc.lcd.lcdDCPin %>;  //DataControl Pin (A0) if none used set to NoPin
+<%- (template.display.type)?"":"//" -%>lcd.panelButtonPin = <%- board.lpc.lcd.panelButtonPin %>; //Extra button on RRD Panel
 
 
 <%
 	let tempSensePins = [];
 
-	//Bed therm
-	if(template.bed.present){
-		if(template.heaters[0].channel != -1 && template.heaters[0].channel != "NoPin" && template.heaters[0].channel != ""){
-			tempSensePins.push(template.heaters[0].channel);
-		}
-	}
-	
 	//Heater therms
-	for(var i=1; i<template.heaters.length; i++){
-		if(template.heaters[i].channel != -1 && template.heaters[i].channel != "NoPin" && template.heaters[i].channel != ""){
-			tempSensePins.push(template.heaters[i].channel);
-		}
+	for(var i=0; i<template.heaters.length; i++){
+		tempSensePins.push(template.heaters[i].sensor_pin);	
 	}
 -%>
 heat.tempSensePins = {<%- util.makePlainArrayString(tempSensePins) %>}; //Max of 3 entries
